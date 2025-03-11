@@ -24,7 +24,10 @@ using System.Reflection;
 
 namespace Aprico.Messaging.Message.Deserializer;
 
-/// <summary>Maintains a collection of message contract types authorized for deserialization in a targeted messaging endpoint.</summary>
+/// <summary>
+/// Provides a base implementation for registering and managing message contract types authorized for deserialization in a
+/// targeted messaging endpoint.
+/// </summary>
 /// <remarks>
 /// <para>
 /// Enables precise control over message contract type registration, limiting deserialization to supported types within a
@@ -42,18 +45,14 @@ namespace Aprico.Messaging.Message.Deserializer;
 /// </list>
 /// </para>
 /// </remarks>
-/// <param name="getContractIdentifierDelegate">
-/// A delegate function that converts a <see cref="Type"/> to its corresponding
-/// string-based identifier. This delegate is used to generate unique identifiers for message contract types during registration.
-/// </param>
 /// <threadsafety>
 /// Ensures thread-safe concurrent read and write operations through the use of
 /// <see cref="ConcurrentDictionary{TKey,TValue}"/>, preventing race conditions during type registration.
 /// </threadsafety>
 [SuppressMessage("ReSharper", "MemberCanBeInternal", Justification = "Public API.")]
-public class MessageContractRegistry(Func<Type, string?> getContractIdentifierDelegate)
+public abstract class MessageContractRegistry(Func<Type, string?> getContractIdentifierDelegate) : IMessageContractRegistry
 {
-	private Func<Type, string?> GetContractIdentifierDelegate { get; } = getContractIdentifierDelegate ?? throw new ArgumentNullException(nameof(getContractIdentifierDelegate));
+	#region IMessageContractRegistry Members
 
 	/// <summary>Determines whether a contract <typeparamref name="T"/> is registered.</summary>
 	/// <typeparam name="T">The message contract type to check for registration.</typeparam>
@@ -122,13 +121,31 @@ public class MessageContractRegistry(Func<Type, string?> getContractIdentifierDe
 		return _registry.TryGetValue(contractIdentifier, out type);
 	}
 
+	/// <summary>Automatically registers all message contract types from the specified <paramref name="assembly"/>.</summary>
+	/// <param name="assembly">The assembly containing the message contract types.</param>
+	/// <returns>
+	/// The current <see cref="IMessageContractRegistry"/> instance, enabling fluent method chaining for contract
+	/// type registrations.
+	/// </returns>
+	/// <remarks>
+	/// Only <see cref="Assembly.ExportedTypes"/> types with a non-<see langword="null"/> and non-<see cref="string.Empty"/>
+	/// contract identifier will be registered.
+	/// </remarks>
+	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API.")]
+	public IMessageContractRegistry RegisterContractAssembly(Assembly assembly)
+	{
+		ArgumentNullException.ThrowIfNull(assembly);
+		foreach (var type in assembly.ExportedTypes.Where(t => !string.IsNullOrWhiteSpace(GetContractIdentifierDelegate(t)))) RegisterContractType(type);
+		return this;
+	}
+
 	/// <summary>Registers a specific message contract <typeparamref name="T"/>.</summary>
 	/// <typeparam name="T">The contract type <typeparamref name="T"/> to register.</typeparam>
 	/// <returns>
-	/// The current <see cref="MessageContractRegistry"/> instance, enabling fluent method chaining for contract type
-	/// registrations.
+	/// The current <see cref="IMessageContractRegistry"/> instance, enabling fluent method chaining for contract
+	/// type registrations.
 	/// </returns>
-	public MessageContractRegistry RegisterContract<T>()
+	public IMessageContractRegistry RegisterContract<T>()
 		where T : notnull
 	{
 		return RegisterContract(typeof(T));
@@ -137,10 +154,10 @@ public class MessageContractRegistry(Func<Type, string?> getContractIdentifierDe
 	/// <summary>Registers a message contract <paramref name="type"/>.</summary>
 	/// <param name="type">The message contract type to be registered.</param>
 	/// <returns>
-	/// The current <see cref="MessageContractRegistry"/> instance, enabling fluent method chaining for contract type
-	/// registrations.
+	/// The current <see cref="IMessageContractRegistry"/> instance, enabling fluent method chaining for contract
+	/// type registrations.
 	/// </returns>
-	public MessageContractRegistry RegisterContract(Type type)
+	public IMessageContractRegistry RegisterContract(Type type)
 	{
 		ArgumentNullException.ThrowIfNull(type);
 		RegisterContractType(type);
@@ -153,37 +170,23 @@ public class MessageContractRegistry(Func<Type, string?> getContractIdentifierDe
 	/// </summary>
 	/// <typeparam name="T">A representative type from the assembly containing the message contract types.</typeparam>
 	/// <returns>
-	/// The current <see cref="MessageContractRegistry"/> instance, enabling fluent method chaining for contract type
-	/// registrations.
+	/// The current <see cref="IMessageContractRegistry"/> instance, enabling fluent method chaining for contract
+	/// type registrations.
 	/// </returns>
 	/// <remarks>
 	/// Only <see cref="Assembly.ExportedTypes"/> types with a non-<see langword="null"/> and non-<see cref="string.Empty"/>
 	/// contract identifier will be registered.
 	/// </remarks>
 	[SuppressMessage("ReSharper", "UnusedMethodReturnValue.Global", Justification = "Fluent API.")]
-	public MessageContractRegistry RegisterContractAssembly<T>()
+	public IMessageContractRegistry RegisterContractAssembly<T>()
 		where T : notnull
 	{
 		return RegisterContractAssembly(typeof(T).Assembly);
 	}
 
-	/// <summary>Automatically registers all message contract types from the specified <paramref name="assembly"/>.</summary>
-	/// <param name="assembly">The assembly containing the message contract types.</param>
-	/// <returns>
-	/// The current <see cref="MessageContractRegistry"/> instance, enabling fluent method chaining for contract type
-	/// registrations.
-	/// </returns>
-	/// <remarks>
-	/// Only <see cref="Assembly.ExportedTypes"/> types with a non-<see langword="null"/> and non-<see cref="string.Empty"/>
-	/// contract identifier will be registered.
-	/// </remarks>
-	[SuppressMessage("ReSharper", "MemberCanBePrivate.Global", Justification = "Public API.")]
-	public MessageContractRegistry RegisterContractAssembly(Assembly assembly)
-	{
-		ArgumentNullException.ThrowIfNull(assembly);
-		foreach (var type in assembly.ExportedTypes.Where(t => !string.IsNullOrWhiteSpace(GetContractIdentifierDelegate(t)))) RegisterContractType(type);
-		return this;
-	}
+	#endregion
+
+	private Func<Type, string?> GetContractIdentifierDelegate { get; } = getContractIdentifierDelegate ?? throw new ArgumentNullException(nameof(getContractIdentifierDelegate));
 
 	private void RegisterContractType(Type type)
 	{

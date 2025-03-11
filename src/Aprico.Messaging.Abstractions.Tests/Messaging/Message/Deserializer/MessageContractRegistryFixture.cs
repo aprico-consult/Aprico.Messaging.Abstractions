@@ -33,7 +33,7 @@ public abstract class MessageContractRegistryFixture
 		[AutoData]
 		public void FailsForUnregisteredContractType(string contractIdentifier)
 		{
-			var sut = new MessageContractRegistry(_ => contractIdentifier);
+			var sut = new MessageContractRegistryDummy(_ => contractIdentifier);
 			Invoking(() => sut.GetRegisteredContract(contractIdentifier))
 				.Should()
 				.Throw<InvalidOperationException>()
@@ -44,7 +44,7 @@ public abstract class MessageContractRegistryFixture
 		[AutoData]
 		public void SucceedsForRegisteredContractType(string contractIdentifier)
 		{
-			new MessageContractRegistry(_ => contractIdentifier).RegisterContract<ContractOne>()
+			new MessageContractRegistryDummy(_ => contractIdentifier).RegisterContract<ContractOne>()
 				.GetRegisteredContract(contractIdentifier)
 				.Should()
 				.Be<ContractOne>();
@@ -61,7 +61,7 @@ public abstract class MessageContractRegistryFixture
 		[AutoData]
 		public void CannotRegisterTwoContractTypesWithSameName(string contractIdentifier)
 		{
-			var sut = new MessageContractRegistry(_ => contractIdentifier).RegisterContract<ContractOne>();
+			var sut = new MessageContractRegistryDummy(_ => contractIdentifier).RegisterContract<ContractOne>();
 			Invoking(sut.RegisterContract<ContractTwo>)
 				.Should()
 				.Throw<InvalidOperationException>()
@@ -74,7 +74,7 @@ public abstract class MessageContractRegistryFixture
 		[AutoData]
 		public void CanRegisterContractTypeTwice(string contractIdentifier)
 		{
-			var sut = new MessageContractRegistry(_ => contractIdentifier).RegisterContract<ContractOne>();
+			var sut = new MessageContractRegistryDummy(_ => contractIdentifier).RegisterContract<ContractOne>();
 			Invoking(sut.RegisterContract<ContractOne>)
 				.Should()
 				.NotThrow();
@@ -86,7 +86,7 @@ public abstract class MessageContractRegistryFixture
 		{
 			using var _ = new AssertionScope();
 
-			var sut = new MessageContractRegistry(_ => contractIdentifier).RegisterContract<ContractOne>();
+			var sut = new MessageContractRegistryDummy(_ => contractIdentifier).RegisterContract<ContractOne>();
 			sut.IsContractRegistered<ContractOne>()
 				.Should()
 				.BeTrue();
@@ -100,7 +100,7 @@ public abstract class MessageContractRegistryFixture
 		{
 			using var _ = new AssertionScope();
 
-			var sut = new MessageContractRegistry(static _ => string.Empty).RegisterContract(typeof(ContractOne));
+			var sut = new MessageContractRegistryDummy(static _ => string.Empty).RegisterContract(typeof(ContractOne));
 			sut.IsContractRegistered(string.Empty)
 				.Should()
 				.BeFalse();
@@ -114,7 +114,7 @@ public abstract class MessageContractRegistryFixture
 		{
 			using var _ = new AssertionScope();
 
-			var sut = new MessageContractRegistry(static _ => null).RegisterContract(typeof(ContractOne));
+			var sut = new MessageContractRegistryDummy(static _ => null).RegisterContract(typeof(ContractOne));
 			sut.IsContractRegistered(string.Empty)
 				.Should()
 				.BeFalse();
@@ -136,7 +136,7 @@ public abstract class MessageContractRegistryFixture
 		{
 			using var _ = new AssertionScope();
 
-			var sut = new MessageContractRegistry(type => type == typeof(ContractOne) ? contractIdentifierOne : type == typeof(ContractTwo) ? contractIdentifierTwo : null)
+			var sut = new MessageContractRegistryDummy(type => type == typeof(ContractOne) ? contractIdentifierOne : type == typeof(ContractTwo) ? contractIdentifierTwo : null)
 				.RegisterContractAssembly<ContractOne>();
 			sut.IsContractRegistered<ContractOne>()
 				.Should()
@@ -163,7 +163,7 @@ public abstract class MessageContractRegistryFixture
 		[AutoData]
 		public void ReturnsNullWhenContractNotRegistered(string contractIdentifier)
 		{
-			new MessageContractRegistry(_ => contractIdentifier).TryGetRegisteredContract(contractIdentifier, out var type)
+			new MessageContractRegistryDummy(_ => contractIdentifier).TryGetRegisteredContract(contractIdentifier, out var type)
 				.Should()
 				.BeFalse();
 			type.Should()
@@ -174,7 +174,7 @@ public abstract class MessageContractRegistryFixture
 		[AutoData]
 		public void ReturnsTypeWhenContractRegistered(string contractIdentifier)
 		{
-			new MessageContractRegistry(_ => contractIdentifier).RegisterContract<ContractOne>()
+			new MessageContractRegistryDummy(_ => contractIdentifier).RegisterContract<ContractOne>()
 				.TryGetRegisteredContract(contractIdentifier, out var type)
 				.Should()
 				.BeTrue();
@@ -182,6 +182,12 @@ public abstract class MessageContractRegistryFixture
 				.Be<ContractOne>();
 		}
 	}
+
+	#endregion
+
+	#region Nested Type: MessageContractRegistryDummy
+
+	private sealed class MessageContractRegistryDummy(Func<Type, string?> contractIdentifierDelegate) : MessageContractRegistry(contractIdentifierDelegate);
 
 	#endregion
 }

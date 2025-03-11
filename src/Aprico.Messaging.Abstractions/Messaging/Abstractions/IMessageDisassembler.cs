@@ -17,6 +17,7 @@
 #endregion
 
 using System.Diagnostics.CodeAnalysis;
+using Aprico.Messaging.Message.Deserializer;
 
 namespace Aprico.Messaging.Abstractions;
 
@@ -35,11 +36,23 @@ namespace Aprico.Messaging.Abstractions;
 public interface IMessageDisassembler<in TMessage>
 	where TMessage : notnull
 {
-	/// <summary>Disassembles and deserializes the payload body from the given <typeparamref name="TMessage"/> message.</summary>
+	/// <summary>Deserializes the payload body from the given <typeparamref name="TMessage"/> message.</summary>
 	/// <param name="message">
 	/// The <typeparamref name="TMessage"/> message to be disassembled and whose payload requires
 	/// deserialization.
 	/// </param>
 	/// <returns>The deserialized message payload object.</returns>
 	object DeserializeBody(TMessage message);
+
+	/// <summary>
+	/// Deserializes the payload body from the given <typeparamref name="TMessage"/> message using the specified message
+	/// contract registry.
+	/// </summary>
+	/// <param name="message">
+	/// The <typeparamref name="TMessage"/> message to be disassembled and whose payload requires
+	/// deserialization.
+	/// </param>
+	/// <param name="messageContractRegistry">The <see cref="IMessageContractRegistry"/> containing message contract information.</param>
+	/// <returns>The deserialized message payload object.</returns>
+	object DeserializeBody(TMessage message, IMessageContractRegistry messageContractRegistry);
 }
