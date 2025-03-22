@@ -22,7 +22,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Aprico.Messaging.Abstractions.Outbox;
+namespace Aprico.Messaging.Abstractions;
 
 /// <summary>Represents an abstraction for a transactional message outbox pattern implementation.</summary>
 /// <typeparam name="TMessage">The type of messages to be stored in the outbox.</typeparam>
