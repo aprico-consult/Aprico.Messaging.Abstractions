@@ -22,7 +22,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Aprico.Messaging.Abstractions;
+namespace Aprico.Messaging;
 
 /// <summary>Abstraction for a transactional outbox client, allowing messages to be enqueued as part of a database transaction.</summary>
 /// <typeparam name="TMessage">The type of messages to be persisted to the outbox store.</typeparam>

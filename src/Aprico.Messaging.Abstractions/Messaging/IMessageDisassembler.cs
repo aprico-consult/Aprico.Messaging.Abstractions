@@ -19,7 +19,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Aprico.Messaging.Message.Deserializer;
 
-namespace Aprico.Messaging.Abstractions;
+namespace Aprico.Messaging;
 
 /// <summary>
 /// Defines a contract for disassembling messages of a specific type <typeparamref name="TMessage"/> returning the

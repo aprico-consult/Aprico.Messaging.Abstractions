@@ -19,7 +19,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Aprico.Messaging.Abstractions;
+namespace Aprico.Messaging;
 
 /// <summary>
 /// Defines a contract for assembling messages of a specific type <typeparamref name="TMessage"/> with a payload body and

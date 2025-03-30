@@ -22,7 +22,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Aprico.Messaging.Abstractions;
+namespace Aprico.Messaging;
 
 /// <summary>Abstraction for accessing messages stored in the transactional outbox for delivery processing.</summary>
 /// <typeparam name="TMessage">The type of messages to be delivered from the outbox.</typeparam>
