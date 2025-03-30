@@ -22,28 +22,31 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Aprico.Messaging.Abstractions.Outbox;
+namespace Aprico.Messaging.Abstractions;
 
-/// <summary>Background worker abstraction responsible for dequeuing and dispatching messages stored in the transactional outbox.</summary>
-/// <typeparam name="TMessage">The type of messages to be processed from the outbox.</typeparam>
+/// <summary>Abstraction for accessing messages stored in the transactional outbox for delivery processing.</summary>
+/// <typeparam name="TMessage">The type of messages to be delivered from the outbox.</typeparam>
 /// <remarks>
-/// As part of the transactional outbox pattern, this component retrieves messages that were enqueued during a database
-/// transaction and reliably dispatches them to their intended destinations.
+/// As part of the transactional outbox pattern, this interface defines an abstraction for retrieving previously enqueued
+/// messages from the outbox message store. It is intended to be used by background delivery components responsible for dispatching
+/// these messages via a messaging broker.
 /// </remarks>
-/// <seealso cref="IOutboxClient{TMessage}"/>
+/// <seealso cref="IOutbox{TMessage}"/>
 [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Public API.")]
 [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
-public interface IOutboxWorker<TMessage>
+public interface IOutboxStore<TMessage>
 {
 	/// <summary>Dequeues up to the specified number of messages from the outbox as part of the given database transaction.</summary>
 	/// <param name="transaction">The database transaction that the dequeue operation will participate in.</param>
 	/// <param name="messageCount">The maximum number of messages to retrieve.</param>
 	/// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
-	/// <returns>A task representing the asynchronous dequeue operation, yielding a collection of messages.</returns>
+	/// <returns>
+	/// A task representing the asynchronous dequeue operation, yielding a tuple with the destination aggregate and the
+	/// corresponding messages.
+	/// </returns>
 	/// <remarks>
 	/// The implementation should ensure that dequeued messages are removed from the outbox and are not retrievable in
 	/// subsequent dequeue operations.
 	/// </remarks>
-	// Task<IEnumerable<TMessage>> DequeueAsync(DbTransaction transaction, int messageCount, CancellationToken cancellationToken = default);
 	Task<(string destinationAggregate, IEnumerable<TMessage> messages)> DequeueAsync(DbTransaction transaction, int messageCount, CancellationToken cancellationToken = default);
 }

@@ -22,18 +22,19 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Aprico.Messaging.Abstractions.Outbox;
+namespace Aprico.Messaging.Abstractions;
 
-/// <summary>Abstraction for a transactional outbox client, allowing messages to be enqueued as part of the ambient transaction.</summary>
-/// <typeparam name="TMessage">The type of messages to be stored in the outbox.</typeparam>
+/// <summary>Abstraction for a transactional outbox client, allowing messages to be enqueued as part of a database transaction.</summary>
+/// <typeparam name="TMessage">The type of messages to be persisted to the outbox store.</typeparam>
 /// <remarks>
-/// The transactional outbox pattern ensures atomic and reliable message delivery by storing messages within the same
-/// transaction as other domain changes. Messages are later dequeued and dispatched by a background worker.
+/// This interface is intended for use by application-layer code to persist outgoing messages as part of the same database
+/// transaction that modifies domain state. According to the transactional outbox pattern, messages are later retrieved from the
+/// outbox and delivered asynchronously by a background delivery process.
 /// </remarks>
-/// <seealso cref="IOutboxWorker{TMessage}"/>
+/// <seealso cref="IOutboxStore{TMessage}"/>
 [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Public API.")]
 [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
-public interface IOutboxClient<in TMessage>
+public interface IOutbox<in TMessage>
 {
 	/// <summary>Enqueues a single message into the outbox as part of the specified database transaction.</summary>
 	/// <param name="transaction">The database transaction that the enqueue operation will participate in.</param>
@@ -45,8 +46,8 @@ public interface IOutboxClient<in TMessage>
 
 	/// <summary>Enqueues multiple messages into the outbox as part of the specified database transaction.</summary>
 	/// <param name="transaction">The database transaction that the enqueue operation will participate in.</param>
-	/// <param name="destinationAggregate">The name of the destination aggregate the message is intended for.</param>
-	/// <param name="messages">The collection of messages to be enqueued.</param>
+	/// <param name="destinationAggregate">The name of the destination aggregate the messages are intended for.</param>
+	/// <param name="messages">The collection of messages to enqueue.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
 	/// <returns>A task representing the asynchronous enqueue operation.</returns>
 	Task EnqueueAsync(DbTransaction transaction, string destinationAggregate, IEnumerable<TMessage> messages, CancellationToken cancellationToken = default);
