@@ -46,7 +46,7 @@ public interface IMessageAssembler<out TMessage>
 	/// <param name="timestamp">Optional timestamp indicating the message creation time.</param>
 	/// <param name="scheduledEnqueueTime">Optional time for message enqueuing.</param>
 	/// <returns>An assembled message of type <typeparamref name="TMessage"/>.</returns>
-	TMessage Serialize<TBody>(
+	TMessage Assemble<TBody>(
 		TBody body,
 		string? messageId = null,
 		string? correlationId = null,
