@@ -41,12 +41,12 @@ public interface IOutboxStore<TMessage>
 	/// <param name="messageCount">The maximum number of messages to retrieve.</param>
 	/// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
 	/// <returns>
-	/// A task representing the asynchronous dequeue operation, yielding a tuple with the destination aggregate and the
-	/// corresponding messages.
+	/// A task representing the asynchronous dequeue operation, yielding a tuple with a subject, or topic, and a collection
+	/// of messages pertaining to that subject or topic.
 	/// </returns>
 	/// <remarks>
 	/// The implementation should ensure that dequeued messages are removed from the outbox and are not retrievable in
 	/// subsequent dequeue operations.
 	/// </remarks>
-	Task<(string destinationAggregate, IEnumerable<TMessage> messages)> DequeueAsync(DbTransaction transaction, int messageCount, CancellationToken cancellationToken = default);
+	Task<(string Subject, IEnumerable<TMessage> Messages)> DequeueAsync(DbTransaction transaction, int messageCount, CancellationToken cancellationToken = default);
 }

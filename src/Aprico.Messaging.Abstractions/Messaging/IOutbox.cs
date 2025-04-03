@@ -38,17 +38,17 @@ public interface IOutbox<in TMessage>
 {
 	/// <summary>Enqueues a single message into the outbox as part of the specified database transaction.</summary>
 	/// <param name="transaction">The database transaction that the enqueue operation will participate in.</param>
-	/// <param name="destinationAggregate">The name of the destination aggregate the message is intended for.</param>
+	/// <param name="subject">The subject or topic to which pertain the messages.</param>
 	/// <param name="message">The message to enqueue.</param>
 	/// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
 	/// <returns>A task representing the asynchronous enqueue operation.</returns>
-	Task EnqueueAsync(DbTransaction transaction, string destinationAggregate, TMessage message, CancellationToken cancellationToken = default);
+	Task EnqueueAsync(DbTransaction transaction, string subject, TMessage message, CancellationToken cancellationToken = default);
 
-	/// <summary>Enqueues multiple messages into the outbox as part of the specified database transaction.</summary>
+	/// <summary>Enqueues a collection messages into the outbox as part of the specified database transaction.</summary>
 	/// <param name="transaction">The database transaction that the enqueue operation will participate in.</param>
-	/// <param name="destinationAggregate">The name of the destination aggregate the messages are intended for.</param>
+	/// <param name="subject">The subject or topic to which pertain the collection of messages.</param>
 	/// <param name="messages">The collection of messages to enqueue.</param>
 	/// <param name="cancellationToken">A token to cancel the asynchronous operation.</param>
 	/// <returns>A task representing the asynchronous enqueue operation.</returns>
-	Task EnqueueAsync(DbTransaction transaction, string destinationAggregate, IEnumerable<TMessage> messages, CancellationToken cancellationToken = default);
+	Task EnqueueAsync(DbTransaction transaction, string subject, IEnumerable<TMessage> messages, CancellationToken cancellationToken = default);
 }
