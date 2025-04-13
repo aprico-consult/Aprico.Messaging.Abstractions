@@ -1,13 +1,13 @@
 #region Copyright & License
 
 // Copyright © 2024 - 2025 Aprico Consultants
-//
+// 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-//
+// 
 // http://www.apache.org/licenses/LICENSE-2.0
-//
+// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -109,7 +109,7 @@ public class OutboxDispatcherFixture
 	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 	public async Task DispatchAsyncPublishesMessages(
 		[Frozen] IOutboxReader<ServiceBusMessage> outboxReader,
-		[Frozen] IMessagePublisher<ServiceBusMessage> messagePublisher,
+		[Frozen] IBatchMessagePublisher<ServiceBusMessage> batchMessagePublisher,
 		OutboxDispatcher<ServiceBusMessage> sut,
 		DbConnection dbConnection,
 		string subject1,
@@ -131,11 +131,11 @@ public class OutboxDispatcherFixture
 
 		await sut.DispatchAsync(dbConnection);
 
-		messagePublisher.AsMock()
+		batchMessagePublisher.AsMock()
 			.Verify(publisher => publisher.PublishAsync(subject1, batch1, It.IsAny<CancellationToken>()), Times.Once);
-		messagePublisher.AsMock()
+		batchMessagePublisher.AsMock()
 			.Verify(publisher => publisher.PublishAsync(subject2, batch2, It.IsAny<CancellationToken>()), Times.Once);
-		messagePublisher.AsMock()
+		batchMessagePublisher.AsMock()
 			.VerifyNoOtherCalls();
 	}
 

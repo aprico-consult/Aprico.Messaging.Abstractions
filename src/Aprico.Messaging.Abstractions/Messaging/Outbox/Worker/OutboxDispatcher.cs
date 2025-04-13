@@ -45,12 +45,32 @@ namespace Aprico.Messaging.Outbox.Worker;
 [SuppressMessage("ReSharper", "MemberCanBeInternal", Justification = "Public API.")]
 public class OutboxDispatcher<TMessage>
 {
-	public OutboxDispatcher(IOutboxReader<TMessage> outboxReader, IMessagePublisher<TMessage> messagePublisher)
+	/// <summary>
+	/// Initializes a new instance of the <see cref="OutboxDispatcher{TMessage}"/> class using the specified outbox reader and
+	/// batch message publisher.
+	/// </summary>
+	/// <param name="outboxReader">
+	/// The component responsible for reading messages from the transactional outbox store. This reader
+	/// supplies batches of messages to be published.
+	/// </param>
+	/// <param name="batchMessagePublisher">
+	/// The publisher responsible for sending batches of messages to an external messaging
+	/// infrastructure, such as Azure Service Bus, RabbitMQ, and others.
+	/// </param>
+	/// <exception cref="ArgumentNullException">
+	/// Thrown if <paramref name="outboxReader"/> or <paramref name="batchMessagePublisher"/>
+	/// is <c>null</c>.
+	/// </exception>
+	/// <remarks>
+	/// This constructor wires together the necessary infrastructure to enable message dispatch as part of the transactional
+	/// outbox pattern.
+	/// </remarks>
+	public OutboxDispatcher(IOutboxReader<TMessage> outboxReader, IBatchMessagePublisher<TMessage> batchMessagePublisher)
 	{
 		ArgumentNullException.ThrowIfNull(outboxReader);
-		ArgumentNullException.ThrowIfNull(messagePublisher);
+		ArgumentNullException.ThrowIfNull(batchMessagePublisher);
 		_outboxReader = outboxReader;
-		_messagePublisher = messagePublisher;
+		_batchMessagePublisher = batchMessagePublisher;
 	}
 
 	/// <summary>
@@ -77,11 +97,11 @@ public class OutboxDispatcher<TMessage>
 			await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
 			var (subject, messages) = await _outboxReader.DequeueAsync(transaction, cancellationToken);
 			if (messages.Any() == false) break;
-			await _messagePublisher.PublishAsync(subject, messages, cancellationToken);
+			await _batchMessagePublisher.PublishAsync(subject, messages, cancellationToken);
 			await transaction.CommitAsync(cancellationToken);
 		}
 	}
 
-	private readonly IMessagePublisher<TMessage> _messagePublisher;
+	private readonly IBatchMessagePublisher<TMessage> _batchMessagePublisher;
 	private readonly IOutboxReader<TMessage> _outboxReader;
 }
