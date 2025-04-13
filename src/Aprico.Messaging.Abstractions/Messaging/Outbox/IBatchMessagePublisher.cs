@@ -49,8 +49,8 @@ public interface IBatchMessagePublisher<in TMessage>
 	/// A logical identifier used to route the messages — typically mapped to a topic, channel, or queue.
 	/// Messages that share the same subject are generally published to the same destination.
 	/// </param>
-	/// <param name="message">The collection of messages to publish.</param>
+	/// <param name="messages">The collection of messages to publish.</param>
 	/// <param name="cancellationToken">A token to observe while waiting for the operation to complete.</param>
 	/// <returns>A task representing the asynchronous publish operation.</returns>
-	Task PublishAsync(string subject, IEnumerable<TMessage> message, CancellationToken cancellationToken = default);
+	Task PublishAsync(string subject, IEnumerable<TMessage> messages, CancellationToken cancellationToken = default);
 }
