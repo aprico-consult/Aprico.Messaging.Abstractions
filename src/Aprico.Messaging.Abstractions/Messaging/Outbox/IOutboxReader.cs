@@ -38,29 +38,6 @@ namespace Aprico.Messaging.Outbox;
 [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
 public interface IOutboxReader<TMessage>
 {
-	/// <summary>Provides a convenient, immutable empty result matching the return type of <see cref="DequeueAsync"/>.</summary>
-	/// <value>A tuple containing an empty string as the subject and an empty collection of messages.</value>
-	/// <remarks>
-	/// <para>
-	/// This default implementation provides a standardized, semantically clear approach to representing a "no messages" state.
-	/// Using an empty tuple instead of <see langword="null"/> (which is not supported for value tuples) simplifies the interface
-	/// design and eliminates the need for manual tuple creation in each implementation.
-	/// </para>
-	/// <para>
-	/// Besides, trying to support <see langword="null"/> results would have introduced unnecessary complexity, requiring
-	/// extensive null-checking and potentially increasing the risk of null-reference exceptions.
-	/// </para>
-	/// </remarks>
-	/// <example>
-	/// Instead of manually creating an empty result <code><![CDATA[
-	/// return (string.Empty, Enumerable.Empty<TMessage>());
-	/// ]]>
-	/// </code> you can simply use <code>
-	/// return Empty;
-	/// </code>
-	/// </example>
-	(string Subject, IEnumerable<TMessage> Messages) Empty => (string.Empty, []);
-
 	/// <summary>Dequeues a batch of messages from the outbox as part of the given database transaction.</summary>
 	/// <param name="transaction">The database transaction that the dequeue operation will participate in.</param>
 	/// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>

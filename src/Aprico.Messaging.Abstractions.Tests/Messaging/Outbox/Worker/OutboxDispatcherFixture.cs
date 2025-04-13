@@ -101,8 +101,6 @@ public class OutboxDispatcherFixture
 		outboxReader.AsMock()
 			.Verify(static reader => reader.DequeueAsync(It.IsAny<DbTransaction>(), It.IsAny<CancellationToken>()), Times.Exactly(callCount: 3));
 		outboxReader.AsMock()
-			.Verify(static reader => reader.Empty, Times.Once);
-		outboxReader.AsMock()
 			.VerifyNoOtherCalls();
 	}
 

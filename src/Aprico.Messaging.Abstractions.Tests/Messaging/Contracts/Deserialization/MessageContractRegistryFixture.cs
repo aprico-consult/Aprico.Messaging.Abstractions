@@ -17,7 +17,7 @@
 #endregion
 
 using System;
-using Aprico.Messaging.Message.Dummies;
+using Aprico.Messaging.Contracts.Dummies;
 using AutoFixture.Xunit2;
 using FluentAssertions.Execution;
 
