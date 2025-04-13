@@ -12,9 +12,11 @@
    </ItemGroup>
 
    <ItemGroup>
+      <PackageReference Include="Aprico.Unit"/>
       <PackageReference Include="AutoFixture"/>
       <PackageReference Include="AutoFixture.AutoMoq"/>
       <PackageReference Include="AutoFixture.Xunit2"/>
+      <PackageReference Include="Azure.Messaging.ServiceBus"/>
       <PackageReference Include="coverlet.collector"/>
       <PackageReference Include="FluentAssertions"/>
       <PackageReference Include="Microsoft.NET.Test.Sdk"/>

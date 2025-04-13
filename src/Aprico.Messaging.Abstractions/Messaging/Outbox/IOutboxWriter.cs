@@ -1,13 +1,13 @@
 #region Copyright & License
 
 // Copyright © 2024 - 2025 Aprico Consultants
-//
+// 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-//
+// 
 // http://www.apache.org/licenses/LICENSE-2.0
-//
+// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Aprico.Messaging;
+namespace Aprico.Messaging.Outbox;
 
 /// <summary>Abstraction for a transactional outbox client, allowing messages to be enqueued as part of a database transaction.</summary>
 /// <typeparam name="TMessage">The type of messages to be persisted to the outbox store.</typeparam>
@@ -31,10 +31,10 @@ namespace Aprico.Messaging;
 /// transaction that modifies domain state. According to the transactional outbox pattern, messages are later retrieved from the
 /// outbox and delivered asynchronously by a background delivery process.
 /// </remarks>
-/// <seealso cref="IOutboxStore{TMessage}"/>
+/// <seealso cref="IOutboxReader{TMessage}"/>
 [SuppressMessage("ReSharper", "UnusedType.Global", Justification = "Public API.")]
 [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Public API.")]
-public interface IOutbox<in TMessage>
+public interface IOutboxWriter<in TMessage>
 {
 	/// <summary>Enqueues a single message into the outbox as part of the specified database transaction.</summary>
 	/// <param name="transaction">The database transaction that the enqueue operation will participate in.</param>

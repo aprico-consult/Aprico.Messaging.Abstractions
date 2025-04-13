@@ -1,13 +1,13 @@
 #region Copyright & License
 
 // Copyright © 2024 - 2025 Aprico Consultants
-//
+// 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-//
+// 
 // http://www.apache.org/licenses/LICENSE-2.0
-//
+// 
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
-namespace Aprico.Messaging.Message.Deserializer;
+namespace Aprico.Messaging.Contracts.Deserialization;
 
 /// <summary>
 /// Provides a base implementation for registering and managing message contract types authorized for deserialization in a
@@ -124,8 +124,8 @@ public abstract class MessageContractRegistry(Func<Type, string?> getContractIde
 	/// <summary>Automatically registers all message contract types from the specified <paramref name="assembly"/>.</summary>
 	/// <param name="assembly">The assembly containing the message contract types.</param>
 	/// <returns>
-	/// The current <see cref="IMessageContractRegistry"/> instance, enabling fluent method chaining for contract
-	/// type registrations.
+	/// The current <see cref="IMessageContractRegistry"/> instance, enabling fluent method chaining for contract type
+	/// registrations.
 	/// </returns>
 	/// <remarks>
 	/// Only <see cref="Assembly.ExportedTypes"/> types with a non-<see langword="null"/> and non-<see cref="string.Empty"/>
@@ -142,8 +142,8 @@ public abstract class MessageContractRegistry(Func<Type, string?> getContractIde
 	/// <summary>Registers a specific message contract <typeparamref name="T"/>.</summary>
 	/// <typeparam name="T">The contract type <typeparamref name="T"/> to register.</typeparam>
 	/// <returns>
-	/// The current <see cref="IMessageContractRegistry"/> instance, enabling fluent method chaining for contract
-	/// type registrations.
+	/// The current <see cref="IMessageContractRegistry"/> instance, enabling fluent method chaining for contract type
+	/// registrations.
 	/// </returns>
 	public IMessageContractRegistry RegisterContract<T>()
 		where T : notnull
@@ -154,8 +154,8 @@ public abstract class MessageContractRegistry(Func<Type, string?> getContractIde
 	/// <summary>Registers a message contract <paramref name="type"/>.</summary>
 	/// <param name="type">The message contract type to be registered.</param>
 	/// <returns>
-	/// The current <see cref="IMessageContractRegistry"/> instance, enabling fluent method chaining for contract
-	/// type registrations.
+	/// The current <see cref="IMessageContractRegistry"/> instance, enabling fluent method chaining for contract type
+	/// registrations.
 	/// </returns>
 	public IMessageContractRegistry RegisterContract(Type type)
 	{
@@ -170,8 +170,8 @@ public abstract class MessageContractRegistry(Func<Type, string?> getContractIde
 	/// </summary>
 	/// <typeparam name="T">A representative type from the assembly containing the message contract types.</typeparam>
 	/// <returns>
-	/// The current <see cref="IMessageContractRegistry"/> instance, enabling fluent method chaining for contract
-	/// type registrations.
+	/// The current <see cref="IMessageContractRegistry"/> instance, enabling fluent method chaining for contract type
+	/// registrations.
 	/// </returns>
 	/// <remarks>
 	/// Only <see cref="Assembly.ExportedTypes"/> types with a non-<see langword="null"/> and non-<see cref="string.Empty"/>
